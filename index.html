@@ -285,7 +285,7 @@
             try {
                 const api_dev = "http://localhost:3000/sendemail"
                 const api_prod = "https://job-email-sender.onrender.com/sendemail"
-                const response = await fetch(api_dev, {
+                const response = await fetch(api_prod, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
