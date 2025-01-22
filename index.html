@@ -103,6 +103,15 @@
                     </div>
                 </div>
 
+                <div>
+                    <p>Select which resume to send</p>
+                    <select name="resume" id="resume">
+                        <option value="JAVA_RESUME">JAVA RESUME</option>
+                        <option value="SOFTWARE_ENGINEER_RESUME">SOFTWARE ENGINEER RESUME</option>
+                        <option value="WEB_DEVELOPER_RESUME">WEB DEVELOPER RESUME</option>
+                    </select>
+                </div>
+
                 <button type="submit" 
                         id="previewButton"
                         class="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -132,6 +141,7 @@
         const preview = document.getElementById('preview');
         const emailBodyDiv = document.getElementById('emailBody');
         const emailBodyHidden = document.getElementById('emailBodyHidden');
+        const resume = document.getElementById('resume');
 
         let typewriterTimeout;
         const typingCursor = document.getElementById('typingCursor');
@@ -163,7 +173,7 @@
                         element.scrollTop = element.scrollHeight;
 
                         // Random typing speed between 10ms and 30ms
-                        const randomDelay = Math.random() * 20 + 2;
+                        const randomDelay = Math.random() * 10 ;
                         typewriterTimeout = setTimeout(type, randomDelay);
                     } else {
                         // Restore the HTML content after typing is complete
@@ -208,6 +218,8 @@
             statusMessage.classList.remove('hidden');
         }
 
+        let company;
+        let jobPosition;
         // Updated preview email details with generation animation
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -224,7 +236,7 @@
 
             try {
                 const api_dev = "http://localhost:3000/poster"
-                const api_prod = "https://job-email-sender.onrender.com/poster"
+                const api_prod = "https://job-email-sender-neeraj.onrender.com/poster"
                 const response = await fetch(api_prod, {
                     method: 'POST',
                     body: formData
@@ -240,10 +252,28 @@
                 document.getElementById('subject').value = data.myEmailObj.subject;
                 
                 // Store original HTML content
-                emailBodyHidden.value = data.myEmailObj.emailBody;
+                // emailBodyHidden.value = data.myEmailObj.emailBody;
+                emailBodyHidden.value = `Dear Hiring Team at ${data.myEmailObj.company},
+
+I am excited to apply for the ${data.myEmailObj.jobPosition} position at your esteemed organization. With a solid foundation and combined with a keen understanding of front-end and back-end development, I am eager to contribute to ${data.myEmailObj.company}'s innovative projects.
+
+My hands-on experience includes creating dynamic web applications and working collaboratively in team environments. I am confident that my technical skills and enthusiasm for learning will enable me to excel in this role.
+
+I look forward to the opportunity to discuss how my skills and aspirations align with your team's goals.
+
+I have attached my resume for your review and would welcome the opportunity to discuss how my skills and experiences align with your team's goals.
+
+Thank you for considering my application, and I look forward to the possibility of contributing to ${data.myEmailObj.company}'s success.
+
+Best regards,
+Neraj Lal S
+Phone: +91 8547470675
+Email: nerajnerajlal@gmail.com`
+                company = data.myEmailObj.company;
+                jobPosition = data.myEmailObj.jobPosition;
                 
                 // Start typewriter effect for email body
-                await typewriterEffect(emailBodyDiv, data.myEmailObj.emailBody);
+                await typewriterEffect(emailBodyDiv, emailBodyHidden.value);
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -279,12 +309,16 @@
             const emailData = {
                 hrEmail: document.getElementById('hrEmail').value,
                 subject: document.getElementById('subject').value,
-                emailBody: emailBodyDiv.innerHTML
+                company,
+                jobPosition,
+                emailBody: emailBodyDiv.innerHTML,
+                resume:document.getElementById('resume').value
+
             };
 
             try {
                 const api_dev = "http://localhost:3000/sendemail"
-                const api_prod = "https://job-email-sender.onrender.com/sendemail"
+                const api_prod = "https://job-email-sender-neeraj.onrender.com/sendemail"
                 const response = await fetch(api_prod, {
                     method: 'POST',
                     headers: {
